@@ -78,18 +78,28 @@ a:hover { color: var(--accent-lit); }
 
 /*--- shell ---*/
 .page {
-  max-width: 46rem;
+  max-width: 62rem;
   margin-inline: auto;
   padding: 0 var(--gutter) 5rem;
 }
 
-/*--- top navigation ---*/
+/*--- top navigation: pinned, so it is reachable at any scroll depth ---*/
 .topnav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   display: flex;
   justify-content: flex-end;
   gap: 1.75rem;
-  padding: 1.5rem 0 0;
+  padding: 1.1rem 0 0.9rem;
+  background: hsl(40, 33%, 99%, 0.94);
+  backdrop-filter: saturate(180%) blur(10px);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease;
 }
+
+.topnav.is-stuck { border-bottom-color: var(--rule); }
 
 .topnav a {
   font-family: var(--sans);
@@ -99,60 +109,65 @@ a:hover { color: var(--accent-lit); }
   text-transform: uppercase;
   color: var(--ink-2);
   text-decoration: none;
-  padding-bottom: 0.35rem;
+  padding-bottom: 0.3rem;
   border-bottom: 1.5px solid transparent;
   transition: color 0.15s ease, border-color 0.15s ease;
 }
 
 .topnav a:hover { color: var(--ink); }
 
-.topnav a[aria-current="page"] {
+.topnav a[aria-current="page"],
+.topnav a.is-active {
   color: var(--ink);
   border-bottom-color: var(--accent);
 }
 
-/*--- masthead ---*/
-.masthead {
-  display: flex;
-  align-items: flex-start;
-  gap: clamp(1.25rem, 4vw, 2.25rem);
-  padding: 2.5rem 0 2rem;
-  border-bottom: 1px solid var(--rule);
+/*--- two-column layout ---*/
+.layout {
+  display: grid;
+  grid-template-columns: 15rem 1fr;
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: start;
+  padding-top: 2.5rem;
+}
+
+/*--- profile column: portrait, then identity beneath it ---*/
+.profile {
+  position: sticky;
+  top: 5rem;
 }
 
 .portrait {
-  width: clamp(116px, 22vw, 168px);
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: 50% 22%;
-  border-radius: 5px;
-  flex-shrink: 0;
+  width: 100%;
+  height: auto;          /* required: the width/height attributes would
+                            otherwise pin the box and defeat aspect-ratio */
+  display: block;
+  border-radius: 6px;
+  margin-bottom: 1.1rem;
   background: var(--paper-sunk);
 }
 
-.identity { padding-top: 0.25rem; }
-
-.identity h1 {
+.profile h1 {
   font-family: var(--serif);
-  font-size: clamp(1.75rem, 5vw, 2.375rem);
+  font-size: 1.6875rem;
   font-weight: 500;
   letter-spacing: -0.015em;
-  line-height: 1.1;
-  margin-bottom: 0.5rem;
+  line-height: 1.15;
+  margin-bottom: 0.4rem;
 }
 
-.identity .role {
+.profile .role {
   font-family: var(--serif);
-  font-size: 1.0625rem;
+  font-size: 1rem;
   font-style: italic;
   color: var(--ink-2);
   line-height: 1.4;
 }
 
-.identity .affiliation {
-  font-size: 0.9375rem;
+.profile .affiliation {
+  font-size: 0.875rem;
   color: var(--ink-3);
-  margin-bottom: 1rem;
+  margin-bottom: 1.1rem;
 }
 
 /*--- contact row ---*/
@@ -160,14 +175,16 @@ a:hover { color: var(--accent-lit); }
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.875rem;
+  gap: 0.75rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
 }
 
 .contact a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--ink-2);
   text-decoration: none;
   transition: color 0.15s ease;
@@ -186,7 +203,7 @@ a:hover { color: var(--accent-lit); }
 
 /*--- prose ---*/
 .bio {
-  padding: 2.25rem 0 0.5rem;
+  padding: 0 0 0.5rem;
   max-width: var(--measure);
 }
 
@@ -209,9 +226,12 @@ a:hover { color: var(--accent-lit); }
   text-transform: uppercase;
   color: var(--ink-3);
   padding-bottom: 0.75rem;
-  margin-top: 3rem;
+  margin-top: 2.75rem;
   border-bottom: 1px solid var(--rule);
+  scroll-margin-top: 5.5rem;   /* clear the pinned nav when jumped to */
 }
+
+#research { scroll-margin-top: 5.5rem; }
 
 /*--- papers ---*/
 .paper-list { margin-top: 0.5rem; }
@@ -380,18 +400,42 @@ a:hover { color: var(--accent-lit); }
 }
 
 /*--- narrow screens ---*/
-@media (max-width: 560px) {
-  body { font-size: 16px; }
 
-  .masthead {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.25rem;
+/* Below the two-column threshold the profile stops being a column and
+   becomes a compact header, so the reader is not scrolling past a
+   full-width portrait to reach the text. */
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
     padding-top: 1.75rem;
   }
 
-  .portrait { width: 132px; }
-  .identity { padding-top: 0; }
+  .profile {
+    position: static;
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    gap: 1.25rem;
+    align-items: start;
+  }
+
+  .portrait { margin-bottom: 0; }
+
+  .contact {
+    grid-column: 1 / -1;
+    padding-top: 1.1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+
+  .profile {
+    grid-template-columns: 110px 1fr;
+    gap: 1rem;
+  }
+
+  .profile h1 { font-size: 1.5rem; }
   .topnav { gap: 1.25rem; }
 }
 
@@ -402,3 +446,35 @@ a:hover { color: var(--accent-lit); }
     scroll-behavior: auto !important;
   }
 }
+
+/* While the Research section is on screen its nav item takes the underline. */
+.topnav a[aria-current="page"].is-muted {
+  color: var(--ink-2);
+  border-bottom-color: transparent;
+}
+
+/**
+ * Single-column variant. The CV page uses it so an A4 document gets the full
+ * measure instead of a 43rem column; the profile becomes a compact header.
+ */
+.layout.is-single { grid-template-columns: 1fr; }
+
+.layout.is-single .profile {
+  position: static;
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  padding-bottom: 1.75rem;
+}
+
+.layout.is-single .portrait { margin-bottom: 0; }
+
+.layout.is-single .contact {
+  grid-column: 1 / -1;
+  margin-top: 0.25rem;
+}
+
+/* The CV page leads with a section label; it needs no leading air. */
+.layout.is-single { gap: 1.5rem; }
+main > .section-label:first-child { margin-top: 0; }
