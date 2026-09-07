@@ -209,7 +209,16 @@ a:hover { color: var(--accent-lit); }
   flex-shrink: 0;
 }
 
-.contact .icon-only { gap: 0; }
+/* WCAG 2.5.8 asks for a 24x24 minimum target regardless of input device;
+   the icons themselves stay 15px. Phones widen this further, below. */
+.contact .icon-only {
+  gap: 0;
+  min-width: 26px;
+  min-height: 26px;
+  justify-content: center;
+}
+
+.contact a { min-height: 26px; }
 
 /*--- prose ---*/
 .bio {
@@ -274,7 +283,7 @@ a:hover { color: var(--accent-lit); }
   align-items: center;
   gap: 0.35rem;
   margin-top: 0.7rem;
-  padding: 0.25rem 0.6rem 0.25rem 0.45rem;
+  padding: 0.35rem 0.6rem 0.35rem 0.45rem;
   font-family: var(--sans);
   font-size: 0.75rem;
   font-weight: 500;
@@ -481,3 +490,53 @@ a:hover { color: var(--accent-lit); }
 
 /* The CV page leads with a section label; it needs no leading air. */
 main > .section-label:first-child { margin-top: 0; }
+
+/*-----------------------------------*\
+  #TOUCH TARGETS
+\*-----------------------------------*/
+
+/**
+ * On phones the icon-only contact links were 15x15 CSS px and the abstract
+ * toggle 23px tall. WCAG 2.5.8 asks for 24x24 as a floor; platform guidance
+ * is 44x44. The icons are given real boxes (spacing is widened so the
+ * enlarged targets cannot overlap each other), while the nav links keep
+ * their compact look and gain an invisible centred hit area instead.
+ */
+@media (max-width: 760px) {
+  .contact {
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .contact a:not(.icon-only) { min-height: 44px; }
+
+  .contact .icon-only {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+
+  .contact svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .abstract-toggle {
+    min-height: 40px;
+    padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+  }
+
+  .topnav a { position: relative; }
+
+  .topnav a::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: max(100%, 44px);
+    height: 44px;
+  }
+}
+
+.pdf-note p:last-child { margin-bottom: 0; }
