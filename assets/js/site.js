@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initAbstracts();
     initStickyNav();
     initScrollSpy();
+    initRuleAlignment();
 });
 
 /**
@@ -65,4 +66,36 @@ function initScrollSpy() {
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
+}
+
+/**
+ * Lines up the rule above the contact row with the rule under the first
+ * section heading in the content column.
+ *
+ * The two rules live in different grid columns whose heights are set by
+ * unrelated content — portrait plus name on one side, however many lines the
+ * bio wraps to on the other — so CSS alone cannot relate them. The offset is
+ * measured instead, and recomputed whenever the bio can rewrap.
+ *
+ * Only ever pushes the contact row down; if the heading sits above it there
+ * is nothing sensible to close, so the natural position is kept.
+ */
+function initRuleAlignment() {
+    const contact = document.querySelector('.profile .contact');
+    const heading = document.querySelector('main .section-label');
+    if (!contact || !heading) return;
+
+    const align = function () {
+        contact.style.marginTop = '';
+        if (window.innerWidth <= 760) return;   // single column: nothing to align
+
+        const delta = heading.getBoundingClientRect().bottom - contact.getBoundingClientRect().top;
+        if (delta > 0.5) contact.style.marginTop = delta + 'px';
+    };
+
+    align();
+    window.addEventListener('resize', align, { passive: true });
+
+    // Webfonts change the metrics of both columns; realign once they land.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(align);
 }

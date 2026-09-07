@@ -27,6 +27,8 @@
   /* metrics */
   --measure: 68ch;
   --gutter: clamp(1.25rem, 5vw, 3rem);
+  --nav-h: 3.75rem;
+  --layout-pad: 2.5rem;
 }
 
 /*--- reset ---*/
@@ -90,8 +92,9 @@ a:hover { color: var(--accent-lit); }
   z-index: 10;
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 1.75rem;
-  padding: 1.1rem 0 0.9rem;
+  height: var(--nav-h);
   background: hsl(40, 33%, 99%, 0.94);
   backdrop-filter: saturate(180%) blur(10px);
   -webkit-backdrop-filter: saturate(180%) blur(10px);
@@ -128,13 +131,20 @@ a:hover { color: var(--accent-lit); }
   grid-template-columns: 15rem 1fr;
   gap: clamp(2rem, 5vw, 3.5rem);
   align-items: start;
-  padding-top: 2.5rem;
+  padding-top: var(--layout-pad);
 }
 
 /*--- profile column: portrait, then identity beneath it ---*/
 .profile {
   position: sticky;
-  top: 5rem;
+  top: calc(var(--nav-h) + var(--layout-pad));
+
+  /* Flex column, not block: it stops the affiliation's bottom margin from
+     collapsing into the contact row's top margin, which would silently
+     swallow any alignment offset smaller than that margin. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .portrait {
@@ -228,10 +238,10 @@ a:hover { color: var(--accent-lit); }
   padding-bottom: 0.75rem;
   margin-top: 2.75rem;
   border-bottom: 1px solid var(--rule);
-  scroll-margin-top: 5.5rem;   /* clear the pinned nav when jumped to */
+  scroll-margin-top: calc(var(--nav-h) + 1rem);   /* clear the pinned nav */
 }
 
-#research { scroll-margin-top: 5.5rem; }
+#research { scroll-margin-top: calc(var(--nav-h) + 1rem); }
 
 /*--- papers ---*/
 .paper-list { margin-top: 0.5rem; }
@@ -454,27 +464,10 @@ a:hover { color: var(--accent-lit); }
 }
 
 /**
- * Single-column variant. The CV page uses it so an A4 document gets the full
- * measure instead of a 43rem column; the profile becomes a compact header.
+ * The CV page carries a wider page box: it keeps the same two-column split as
+ * About, but an A4 document needs more measure than prose does.
  */
-.layout.is-single { grid-template-columns: 1fr; }
-
-.layout.is-single .profile {
-  position: static;
-  display: grid;
-  grid-template-columns: 132px 1fr;
-  gap: 1.25rem;
-  align-items: start;
-  padding-bottom: 1.75rem;
-}
-
-.layout.is-single .portrait { margin-bottom: 0; }
-
-.layout.is-single .contact {
-  grid-column: 1 / -1;
-  margin-top: 0.25rem;
-}
+.page.page--wide { max-width: 74rem; }
 
 /* The CV page leads with a section label; it needs no leading air. */
-.layout.is-single { gap: 1.5rem; }
 main > .section-label:first-child { margin-top: 0; }
