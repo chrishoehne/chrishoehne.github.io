@@ -465,9 +465,19 @@ a:hover { color: var(--accent-lit); }
 
 /**
  * The CV page carries a wider page box: it keeps the same two-column split as
- * About, but an A4 document needs more measure than prose does.
+ * About, but an A4 document needs more room than prose does.
+ *
+ * The extra width is spent entirely on the right. Pinning the left margin to
+ * where the narrower About box starts — rather than letting the wider box
+ * re-centre — keeps the portrait in an identical position on both pages at
+ * every viewport width, while margin-right:0 lets the document column claim
+ * whatever is left over.
  */
-.page.page--wide { max-width: 74rem; }
+.page.page--wide {
+  max-width: 74rem;
+  margin-left: max(0px, calc(50% - 31rem));
+  margin-right: 0;
+}
 
 /* The CV page leads with a section label; it needs no leading air. */
 main > .section-label:first-child { margin-top: 0; }
